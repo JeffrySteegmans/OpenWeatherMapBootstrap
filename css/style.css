@@ -2,3 +2,10 @@ body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+.min-height-xl {
+  min-height: 200px;
+}
+
+.font-size-sm {
+  font-size: .5em;
+}
