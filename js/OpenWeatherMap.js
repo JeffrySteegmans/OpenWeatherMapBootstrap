@@ -15,8 +15,7 @@
     $('#btn-erase')
       .on('click', BtnErase_OnClick);
 
-    $('#txt-city')
-      .focus();
+    FocusTextBox();
   }
 
   function BtnLoad_OnClick(e) {
@@ -24,12 +23,22 @@
 
     var city = $('#txt-city').val();
     LoadWeatherData(city);
+
+    FocusTextBox();
   }
 
   function BtnErase_OnClick(e) {
     e.preventDefault();
 
-    console.log('BtnErase clicked');
+    $('#results').empty();
+
+    FocusTextBox();
+  }
+
+  function FocusTextBox() {
+    $('#txt-city')
+      .val('')
+      .focus();
   }
 
   function LoadWeatherData(city) {
@@ -48,14 +57,26 @@
     var card = GenerateCard(viewModel);
 
     $('#results').append(card);
-    // console.log(viewModel);
-    // console.log(card);
+
+    var mapViewModel = GetMapViewModel(weatherData);
+    InitializeMap(mapViewModel);
+  }
+
+  function InitializeMap(data) {
+    var map = L.map('city-' + data.cityId).setView([data.lat, data.lon], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([data.lat, data.lon]).addTo(map);
   }
 
   function GenerateCard(data) {
     var col = $('<div class="col" />');
 
-    var card = $('<div class="card" />');
+    var card = $('<div class="card mt-3" />');
 
     var map = $('<div id="city-' + data.cityId + '" class="card-img-top min-height-xl" />');
     card.append(map);
@@ -78,6 +99,18 @@
     bodyHeader.append(country);
     body.append(bodyHeader);
 
+    var bodyText = $('<p class="card-text text-center" />');
+    bodyText.html(
+      'Het is momenteel <span class="font-weight-bolder font-size-l">' +
+      data.temperature + 
+      '°C</span><br />en <span class="font-weight-bolder font-size-l">' +
+      data.weatherDescription +
+      '</span> in <span class="font-weight-bolder font-size-l">' +
+      data.cityName + 
+      '</span>'
+    );
+    body.append(bodyText);
+
     card.append(body);
 
     col.append(card);
@@ -94,6 +127,16 @@
       weatherDescription: weatherData.weather[0].description,
       country: weatherData.sys.country,
       temperature: weatherData.main.temp
+    };
+
+    return viewModel;
+  }
+
+  function GetMapViewModel(weatherData) {
+    var viewModel = {
+      lat: weatherData.coord.lat,
+      lon: weatherData.coord.lon,
+      cityId: weatherData.id
     };
 
     return viewModel;

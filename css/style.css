@@ -1,5 +1,6 @@
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding-top: 70px;
 }
 
 .min-height-xl {
@@ -8,4 +9,8 @@ body {
 
 .font-size-sm {
   font-size: .5em;
+}
+
+.font-size-l {
+  font-size: 1.3em;
 }
